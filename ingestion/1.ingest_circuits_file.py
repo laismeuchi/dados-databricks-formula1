@@ -4,6 +4,14 @@
 
 # COMMAND ----------
 
+# MAGIC %run ../includes/configuration
+
+# COMMAND ----------
+
+# MAGIC %run ../includes/common_functions
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC ### Step 1 - Read the CSV file using the spark dataframe reader
 
@@ -33,7 +41,7 @@ circuits_schema = StructType(
 circuits_df = (
     spark.read.option("header", True)
     .schema(circuits_schema)
-    .csv("/mnt/formula1dlmeuchi/raw/circuits.csv")
+    .csv(f"{raw_folder_path}/circuits.csv")
 )
 
 # COMMAND ----------
@@ -75,7 +83,7 @@ circuits_renamed_df = (
 
 # COMMAND ----------
 
-circuits_final_df = circuits_renamed_df.withColumn("ingestion_date", current_timestamp())
+circuits_final_df = add_ingestion_date(circuits_renamed_df)
 
 # COMMAND ----------
 
@@ -84,4 +92,4 @@ circuits_final_df = circuits_renamed_df.withColumn("ingestion_date", current_tim
 
 # COMMAND ----------
 
-circuits_final_df.write.mode("overwrite").parquet("/mnt/formula1dlmeuchi/processed/circuits")
+circuits_final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/circuits")

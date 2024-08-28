@@ -4,6 +4,14 @@
 
 # COMMAND ----------
 
+# MAGIC %run ../includes/configuration
+
+# COMMAND ----------
+
+# MAGIC %run ../includes/common_functions
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC ### Step 1 - Read the Json file using the spark dataframe reader API
 
@@ -34,7 +42,7 @@ drivers_schema = StructType(fields=[StructField("driverId", IntegerType(), False
 
 # COMMAND ----------
 
-drivers_df = spark.read.schema(drivers_schema).json("/mnt/formula1dlmeuchi/raw/drivers.json")
+drivers_df = spark.read.schema(drivers_schema).json(f"{raw_folder_path}/drivers.json")
 
 # COMMAND ----------
 
@@ -50,9 +58,12 @@ drivers_df = spark.read.schema(drivers_schema).json("/mnt/formula1dlmeuchi/raw/d
 drivers_with_columns_df = (
     drivers_df.withColumnRenamed("driverId", "driver_id")
               .withColumnRenamed("driverRef", "driver Ref")
-              .withColumn("ingestion_date", current_timestamp())
               .withColumn("name", concat(col("name.forename"), lit(" "), col("name.surname")))
 ) 
+
+# COMMAND ----------
+
+drivers_with_columns_df = add_ingestion_date(drivers_with_columns_df)
 
 # COMMAND ----------
 
@@ -73,4 +84,4 @@ drivers_dropped_df = drivers_with_columns_df.drop("url")
 
 # COMMAND ----------
 
-drivers_dropped_df.write.mode("overwrite").parquet("/mnt/formula1dlmeuchi/processed/drivers")
+drivers_dropped_df.write.mode("overwrite").parquet(f"{processed_folder_path}/drivers")

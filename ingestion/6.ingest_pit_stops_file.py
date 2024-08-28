@@ -4,6 +4,14 @@
 
 # COMMAND ----------
 
+# MAGIC %run ../includes/configuration
+
+# COMMAND ----------
+
+# MAGIC %run ../includes/common_functions
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC ### Step 1 - Read the Json file using the spark dataframe reader API
 
@@ -25,7 +33,7 @@ pit_stop_schema = StructType(fields=[StructField("raceId", IntegerType(), False)
 
 # COMMAND ----------
 
-pit_stops_df = spark.read.schema(pit_stop_schema).option("multiline", True).json("/mnt/formula1dlmeuchi/raw/pit_stops.json")
+pit_stops_df = spark.read.schema(pit_stop_schema).option("multiline", True).json(f"{raw_folder_path}/pit_stops.json")
 
 # COMMAND ----------
 
@@ -37,8 +45,11 @@ pit_stops_df = spark.read.schema(pit_stop_schema).option("multiline", True).json
 
 pit_stops_final_df = ( pit_stops_df.withColumnRenamed("raceId", "race_id")
                            .withColumnRenamed("driverId", "driver_id")
-                           .withColumn("ingestion_date", current_timestamp())
 ) 
+
+# COMMAND ----------
+
+pit_stops_final_df = add_ingestion_date(pit_stops_final_df)
 
 # COMMAND ----------
 
@@ -47,4 +58,4 @@ pit_stops_final_df = ( pit_stops_df.withColumnRenamed("raceId", "race_id")
 
 # COMMAND ----------
 
-pit_stops_final_df.write.mode("overwrite").parquet("/mnt/formula1dlmeuchi/processed/pit_stops")
+pit_stops_final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/pit_stops")

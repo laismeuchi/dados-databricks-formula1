@@ -4,6 +4,14 @@
 
 # COMMAND ----------
 
+# MAGIC %run ../includes/configuration
+
+# COMMAND ----------
+
+# MAGIC %run ../includes/common_functions
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC ### Step 1 - Read the Json file using the spark dataframe reader API
 
@@ -27,7 +35,7 @@ qualifying_schema = StructType(fields=[StructField("qualifyId", IntegerType(), F
 
 # COMMAND ----------
 
-qualifying_df = spark.read.schema(qualifying_schema).option("multiline", True).json("/mnt/formula1dlmeuchi/raw/qualifying")
+qualifying_df = spark.read.schema(qualifying_schema).option("multiline", True).json(f"{raw_folder_path}/qualifying")
 
 # COMMAND ----------
 
@@ -41,8 +49,11 @@ qualifying_final_df = ( qualifying_df.withColumnRenamed("qualifyingId", "qualify
                            .withColumnRenamed("raceId", "race_id")
                            .withColumnRenamed("driverId", "driver_id")
                            .withColumnRenamed("constructorId", "constructor_id")
-                           .withColumn("ingestion_date", current_timestamp())
 ) 
+
+# COMMAND ----------
+
+qualifying_final_df = add_ingestion_date(qualifying_final_df)
 
 # COMMAND ----------
 
@@ -51,4 +62,4 @@ qualifying_final_df = ( qualifying_df.withColumnRenamed("qualifyingId", "qualify
 
 # COMMAND ----------
 
-qualifying_final_df.write.mode("overwrite").parquet("/mnt/formula1dlmeuchi/processed/qualifying")
+qualifying_final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/qualifying")

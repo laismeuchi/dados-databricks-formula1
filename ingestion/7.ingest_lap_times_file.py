@@ -4,6 +4,14 @@
 
 # COMMAND ----------
 
+# MAGIC %run ../includes/configuration
+
+# COMMAND ----------
+
+# MAGIC %run ../includes/common_functions
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC ### Step 1 - Read the Json file using the spark dataframe reader API
 
@@ -24,7 +32,7 @@ lap_times_schema = StructType(fields=[StructField("raceId", IntegerType(), False
 
 # COMMAND ----------
 
-lap_times_df = spark.read.schema(lap_times_schema).csv("/mnt/formula1dlmeuchi/raw/lap_times")
+lap_times_df = spark.read.schema(lap_times_schema).csv(f"{raw_folder_path}/lap_times")
 
 # COMMAND ----------
 
@@ -36,8 +44,11 @@ lap_times_df = spark.read.schema(lap_times_schema).csv("/mnt/formula1dlmeuchi/ra
 
 lap_times_final_df = ( lap_times_df.withColumnRenamed("raceId", "race_id")
                            .withColumnRenamed("driverId", "driver_id")
-                           .withColumn("ingestion_date", current_timestamp())
 ) 
+
+# COMMAND ----------
+
+lap_times_final_df = add_ingestion_date(lap_times_final_df)
 
 # COMMAND ----------
 
@@ -46,4 +57,4 @@ lap_times_final_df = ( lap_times_df.withColumnRenamed("raceId", "race_id")
 
 # COMMAND ----------
 
-lap_times_final_df.write.mode("overwrite").parquet("/mnt/formula1dlmeuchi/processed/lap_times")
+lap_times_final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/lap_times")

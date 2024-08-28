@@ -4,6 +4,14 @@
 
 # COMMAND ----------
 
+# MAGIC %run ../includes/configuration
+
+# COMMAND ----------
+
+# MAGIC %run ../includes/common_functions
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC ### Step 1 - Read the CSV file using the spark dataframe reader
 
@@ -31,7 +39,7 @@ races_schema = StructType(
 races_df = (
     spark.read.option("header", True)
     .schema(races_schema)
-    .csv("/mnt/formula1dlmeuchi/raw/races.csv")
+    .csv(f"{raw_folder_path}/races.csv")
 )
 
 # COMMAND ----------
@@ -72,9 +80,7 @@ races_renamed_df = (
 
 # COMMAND ----------
 
-races_transformed_df = (
-    races_renamed_df.withColumn("race_timestamp", to_timestamp(concat(col('date'), lit(' '), col('time')), 'yyyy-MM-dd HH:mm:ss'))
-)
+races_transformed_df = add_ingestion_date(races_renamed_df)
 
 # COMMAND ----------
 
@@ -92,4 +98,4 @@ races_final_df = races_transformed_df.withColumn("ingestion_date", current_times
 
 # COMMAND ----------
 
-races_final_df.write.mode("overwrite").partitionBy('race_year').parquet("/mnt/formula1dlmeuchi/processed/races")
+races_final_df.write.mode("overwrite").partitionBy('race_year').parquet(f"{processed_folder_path}/races")
