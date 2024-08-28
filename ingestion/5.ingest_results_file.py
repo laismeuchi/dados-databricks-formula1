@@ -9,6 +9,14 @@
 
 # COMMAND ----------
 
+# MAGIC %run ../includes/configuration
+
+# COMMAND ----------
+
+# MAGIC %run ../includes/common_functions
+
+# COMMAND ----------
+
 from pyspark.sql.types import StructType, StructField, IntegerType, StringType, DateType, FloatType
 from pyspark.sql.functions import col, concat, current_timestamp, lit, col
 
@@ -35,7 +43,7 @@ results_schema = StructType(fields=[StructField("resultId", IntegerType(), False
 
 # COMMAND ----------
 
-results_df = spark.read.schema(results_schema).json("/mnt/formula1dlmeuchi/raw/results.json")
+results_df = spark.read.schema(results_schema).json(f"{raw_folder_path}/results.json")
 
 # COMMAND ----------
 
@@ -54,8 +62,11 @@ results_with_columns_df = ( results_df.withColumnRenamed("resultId", "result_id"
                            .withColumnRenamed("fastestLap", "fastest_lap")
                            .withColumnRenamed("fastestLapTime", "fastest_lap_time")
                            .withColumnRenamed("fastestLapSpeed", "fastest_lap_speed")
-                           .withColumn("ingestion_date", current_timestamp())
 ) 
+
+# COMMAND ----------
+
+results_with_columns_df = add_ingestion_date(results_with_columns_df)
 
 # COMMAND ----------
 
@@ -73,4 +84,4 @@ results_final = results_with_columns_df.drop(col("statusId"))
 
 # COMMAND ----------
 
-results_final.write.mode("overwrite").partitionBy('race_id').parquet("/mnt/formula1dlmeuchi/processed/results")
+results_final.write.mode("overwrite").partitionBy('race_id').parquet(f"{processed_folder_path}/results")

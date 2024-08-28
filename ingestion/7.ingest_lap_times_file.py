@@ -1,6 +1,6 @@
 # Databricks notebook source
 # MAGIC %md
-# MAGIC # Ingest pit_stops.json file
+# MAGIC # Ingest lap_times folder
 
 # COMMAND ----------
 
@@ -22,18 +22,17 @@ from pyspark.sql.functions import col, concat, current_timestamp, lit, col
 
 # COMMAND ----------
 
-pit_stop_schema = StructType(fields=[StructField("raceId", IntegerType(), False),
+lap_times_schema = StructType(fields=[StructField("raceId", IntegerType(), False),
                                      StructField("driverId", IntegerType(), True),
-                                     StructField("stop", StringType(), True),
                                      StructField("lap", IntegerType(), True),
+                                     StructField("position", IntegerType(), True),
                                      StructField("time", StringType(), True),
-                                     StructField("duration", StringType(), True),
                                      StructField("milliseconds", IntegerType(), True)
                                     ])
 
 # COMMAND ----------
 
-pit_stops_df = spark.read.schema(pit_stop_schema).option("multiline", True).json(f"{raw_folder_path}/pit_stops.json")
+lap_times_df = spark.read.schema(lap_times_schema).csv(f"{raw_folder_path}/lap_times")
 
 # COMMAND ----------
 
@@ -43,13 +42,13 @@ pit_stops_df = spark.read.schema(pit_stop_schema).option("multiline", True).json
 
 # COMMAND ----------
 
-pit_stops_final_df = ( pit_stops_df.withColumnRenamed("raceId", "race_id")
+lap_times_final_df = ( lap_times_df.withColumnRenamed("raceId", "race_id")
                            .withColumnRenamed("driverId", "driver_id")
 ) 
 
 # COMMAND ----------
 
-pit_stops_final_df = add_ingestion_date(pit_stops_final_df)
+lap_times_final_df = add_ingestion_date(lap_times_final_df)
 
 # COMMAND ----------
 
@@ -58,4 +57,4 @@ pit_stops_final_df = add_ingestion_date(pit_stops_final_df)
 
 # COMMAND ----------
 
-pit_stops_final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/pit_stops")
+lap_times_final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/lap_times")

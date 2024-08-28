@@ -9,6 +9,14 @@
 
 # COMMAND ----------
 
+# MAGIC %run ../includes/configuration
+
+# COMMAND ----------
+
+# MAGIC %run ../includes/common_functions
+
+# COMMAND ----------
+
 from pyspark.sql.functions import col, current_timestamp
 
 # COMMAND ----------
@@ -20,7 +28,7 @@ constuctor_schema = "constructorId INT, constructorRef STRING, name STRING, nati
 constructors_df = (
     spark.read
     .schema(constuctor_schema)
-    .json("/mnt/formula1dlmeuchi/raw/constructors.json")
+    .json(f"{raw_folder_path}/constructors.json")
     )
 
 
@@ -49,9 +57,13 @@ constructor_final_df = (
 
 # COMMAND ----------
 
+constructor_final_df = add_ingestion_date(constructor_final_df)
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC ### Step 4 - Write output to parquet file
 
 # COMMAND ----------
 
-constructor_final_df.write.mode("overwrite").parquet("/mnt/formula1dlmeuchi/processed/constructors")
+constructor_final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/constructors")
