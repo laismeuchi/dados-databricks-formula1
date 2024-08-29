@@ -65,3 +65,7 @@ pit_stops_final_df = add_ingestion_date(pit_stops_final_df)
 # COMMAND ----------
 
 pit_stops_final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/pit_stops")
+
+# COMMAND ----------
+
+dbutils.notebook.exit("Success")
