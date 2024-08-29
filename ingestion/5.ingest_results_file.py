@@ -9,6 +9,11 @@
 
 # COMMAND ----------
 
+dbutils.widgets.text("p_data_source","")
+v_data_source = dbutils.widgets.get("p_data_source")
+
+# COMMAND ----------
+
 # MAGIC %run ../includes/configuration
 
 # COMMAND ----------
@@ -62,6 +67,7 @@ results_with_columns_df = ( results_df.withColumnRenamed("resultId", "result_id"
                            .withColumnRenamed("fastestLap", "fastest_lap")
                            .withColumnRenamed("fastestLapTime", "fastest_lap_time")
                            .withColumnRenamed("fastestLapSpeed", "fastest_lap_speed")
+                           .withColumn("data_source", lit(v_data_source))
 ) 
 
 # COMMAND ----------

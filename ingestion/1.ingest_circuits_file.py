@@ -4,6 +4,11 @@
 
 # COMMAND ----------
 
+dbutils.widgets.text("p_data_source","")
+v_data_source = dbutils.widgets.get("p_data_source")
+
+# COMMAND ----------
+
 # MAGIC %run ../includes/configuration
 
 # COMMAND ----------
@@ -18,7 +23,7 @@
 # COMMAND ----------
 
 from pyspark.sql.types import StructType, StructField, IntegerType, StringType, DoubleType
-from pyspark.sql.functions import col, current_timestamp
+from pyspark.sql.functions import col, current_timestamp, lit
 
 # COMMAND ----------
 
@@ -73,6 +78,7 @@ circuits_renamed_df = (
     .withColumnRenamed("lat", "latitude")
     .withColumnRenamed("lng", "longitude")
     .withColumnRenamed("alt", "altitude")
+    .withColumn("data_source", lit(v_data_source))
 )
 
 # COMMAND ----------
@@ -93,3 +99,7 @@ circuits_final_df = add_ingestion_date(circuits_renamed_df)
 # COMMAND ----------
 
 circuits_final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/circuits")
+
+# COMMAND ----------
+
+display(spark.read.parquet(f"{processed_folder_path}/circuits"))

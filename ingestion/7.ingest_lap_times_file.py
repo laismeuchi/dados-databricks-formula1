@@ -4,6 +4,11 @@
 
 # COMMAND ----------
 
+dbutils.widgets.text("p_data_source","")
+v_data_source = dbutils.widgets.get("p_data_source")
+
+# COMMAND ----------
+
 # MAGIC %run ../includes/configuration
 
 # COMMAND ----------
@@ -44,6 +49,7 @@ lap_times_df = spark.read.schema(lap_times_schema).csv(f"{raw_folder_path}/lap_t
 
 lap_times_final_df = ( lap_times_df.withColumnRenamed("raceId", "race_id")
                            .withColumnRenamed("driverId", "driver_id")
+                           .withColumn("data_source", lit(v_data_source))
 ) 
 
 # COMMAND ----------
