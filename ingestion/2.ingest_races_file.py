@@ -104,3 +104,7 @@ races_final_df = races_transformed_df.withColumn("ingestion_date", current_times
 # COMMAND ----------
 
 races_final_df.write.mode("overwrite").partitionBy('race_year').parquet(f"{processed_folder_path}/races")
+
+# COMMAND ----------
+
+dbutils.notebook.exit("Success")

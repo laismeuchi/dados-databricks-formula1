@@ -73,3 +73,7 @@ constructor_final_df = add_ingestion_date(constructor_final_df)
 # COMMAND ----------
 
 constructor_final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/constructors")
+
+# COMMAND ----------
+
+dbutils.notebook.exit("Success")
