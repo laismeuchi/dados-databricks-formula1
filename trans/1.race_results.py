@@ -51,7 +51,8 @@ races_result_df = (races_df.join(circuits_df, races_df.circuit_id == circuits_df
                                   results_df.grid,
                                   results_df.fastest_lap,
                                   races_df.race_time,
-                                  results_df.points
+                                  results_df.points,
+                                  results_df.position
                                   )
                           .withColumn("crated_date", current_timestamp())
 )
