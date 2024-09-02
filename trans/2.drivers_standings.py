@@ -13,7 +13,7 @@ from pyspark.sql.window import Window
 
 # COMMAND ----------
 
-race_results_df = spark.read.parquet(f"{presentation_folder_path}/races_results")
+race_results_df = spark.read.table("f1_presentation.races_results")
 
 # COMMAND ----------
 
@@ -44,4 +44,4 @@ display(final_df.filter("race_year = 2020"))
 
 # COMMAND ----------
 
-final_df.write.mode("overwrite").parquet(f"{presentation_folder_path}/driver_standings")
+final_df.write.mode("overwrite").saveAsTable("f1_presentation.driver_standings")
