@@ -7,7 +7,7 @@ from pyspark.sql.functions import col, current_timestamp
 
 # COMMAND ----------
 
-races_df = (spark.read.parquet(f"{processed_folder_path}/races")
+races_df = (spark.read.table("f1_processed.races")
             .withColumnRenamed("name","race_name")
             .withColumnRenamed("date","race_date")
             .withColumnRenamed("time", "race_time")
@@ -15,11 +15,12 @@ races_df = (spark.read.parquet(f"{processed_folder_path}/races")
 
 # COMMAND ----------
 
-circuits_df = spark.read.parquet(f"{processed_folder_path}/circuits").withColumnRenamed("location","circuit_location")
+circuits_df = (spark.read.table("f1_processed.circuits")
+               .withColumnRenamed("location","circuit_location"))
 
 # COMMAND ----------
 
-drivers_df = (spark.read.parquet(f"{processed_folder_path}/drivers")
+drivers_df = (spark.read.table("f1_processed.drivers")
               .withColumnRenamed("name", "driver_name")
               .withColumnRenamed("number", "driver_number")
               .withColumnRenamed("nationality", "driver_nationality")
@@ -27,11 +28,12 @@ drivers_df = (spark.read.parquet(f"{processed_folder_path}/drivers")
 
 # COMMAND ----------
 
-constructors_df = spark.read.parquet(f"{processed_folder_path}/constructors").withColumnRenamed("name", "team")
+constructors_df = (spark.read.table("f1_processed.constructors")
+                   .withColumnRenamed("name", "team"))
 
 # COMMAND ----------
 
-results_df = spark.read.parquet(f"{processed_folder_path}/results")
+results_df = spark.read.table("f1_processed.results")
 
 # COMMAND ----------
 
@@ -63,4 +65,4 @@ display(races_result_df.filter("race_year == 2020 and race_name == 'Abu Dhabi Gr
 
 # COMMAND ----------
 
-races_result_df.write.mode("overwrite").parquet(f"{presentation_folder_path}/races_results")
+races_result_df.write.mode("overwrite").saveAsTable("f1_presentation.races_results")

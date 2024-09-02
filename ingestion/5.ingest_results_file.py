@@ -90,7 +90,8 @@ results_final = results_with_columns_df.drop(col("statusId"))
 
 # COMMAND ----------
 
-results_final.write.mode("overwrite").partitionBy('race_id').parquet(f"{processed_folder_path}/results")
+# results_final.write.mode("overwrite").partitionBy('race_id').parquet(f"{processed_folder_path}/results")
+results_final.write.mode("overwrite").format("delta").saveAsTable("f1_processed.results")
 
 # COMMAND ----------
 

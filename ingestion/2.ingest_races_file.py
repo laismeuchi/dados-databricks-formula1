@@ -103,7 +103,8 @@ races_final_df = races_transformed_df.withColumn("ingestion_date", current_times
 
 # COMMAND ----------
 
-races_final_df.write.mode("overwrite").partitionBy('race_year').parquet(f"{processed_folder_path}/races")
+# races_final_df.write.mode("overwrite").partitionBy('race_year').parquet(f"{processed_folder_path}/races")
+races_final_df.write.mode("overwrite").format("delta").saveAsTable("f1_processed.races")
 
 # COMMAND ----------
 
